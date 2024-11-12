@@ -68,7 +68,6 @@ LEFT JOIN
     courses ON student_courses.course_id = courses.id
    LIMIT 10;
 
---Для выполнения следующего задания, нужно создать и заполнить несколько таблиц
  --Создаю таблицу data_base_courses
 CREATE TABLE data_base_courses(
 	student_id INTEGER REFERENCES students(id),
@@ -128,7 +127,8 @@ WHERE
         WHERE
             other.group_id = s.group_id
             AND other.student_id != s.student_id
-    );
+    )
+   LIMIT 5;
 
 --Запрос считающий количество студентов на каждом курсе
 SELECT
@@ -139,7 +139,8 @@ FROM
 LEFT JOIN
     student_courses AS sc ON c.id = sc.course_id
 GROUP BY
-    c.name;
+    c.name
+LIMIT 10;
 
 
 --Запрос находящий среднюю оценку на каждом курсе
@@ -160,4 +161,5 @@ FROM (
         data_base_courses
 ) AS all_grades
 GROUP BY
-    course_name;
+    course_name
+LIMIT 10;
