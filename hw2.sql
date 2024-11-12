@@ -20,28 +20,26 @@ CREATE TABLE group_courses(
 
 --Заполняю таблицу student_courses
 INSERT INTO student_courses(student_id, course_id) VALUES
-(1, 1),
-(2, 1),
-(3, 1),
-(4, 2),
-(5, 2),
-(6, 2),
-(1, 3),
-(2, 3),
-(3, 3),
-(4, 3),
-(5, 3),
-(6, 3);
+(1, 1), (2, 1), (3, 1),
+(4, 2), (5, 2), (6, 2),
+(1, 3), (2, 3), (3, 3),
+(4, 3), (5, 3), (6, 3);
 
 
 --Заполняю таблицу group_courses
 INSERT INTO group_courses(group_id, course_id) VALUES
-(1, 1);
+(1, 1), (2, 2), (1, 3), (2, 3);
 
 
 --Удаляю устаревшие поля с помощью ALTER TABLE
---Пока не понимаю какие поля следует удалять
+--Честно говоря, пока не очень понимаю какие поля можно удалить.
+--Создам не нужное поле courses_ids в таблице students, для того чтобы потом его удалить.
+ALTER TABLE students
+ADD courses_ids INTEGER[];
 
+--Удаляю поле courses_ids с помощью ALTER TABLE
+ALTER TABLE students
+DROP COLUMN courses_ids;
 
 --Добавляю в courses уникальность имени
 ALTER TABLE courses
