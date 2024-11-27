@@ -128,10 +128,11 @@ GROUP BY
     c.category_id
 ORDER BY
     product_count DESC
-LIMIT 20;
+LIMIT 10;
 
 --Общая выручка по всем заказам
 SELECT
     SUM(total_amount) AS total_revenue
 FROM
-    orders;
+    orders
+LIMIT 1;
