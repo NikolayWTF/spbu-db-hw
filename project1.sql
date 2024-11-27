@@ -74,3 +74,64 @@ INSERT INTO order_items (order_id, product_id, quantity, total_price) VALUES
 (1, 2, 1, 49.99),
 (1, 3, 1, 89.99),
 (2, 5, 1, 75.00);
+
+--Вывести все товары с их категориями и количеством на складе
+SELECT
+    p.product_name,
+    c.category_name,
+    p.stock_quantity
+FROM
+    products p
+JOIN
+    categories c ON p.category_id = c.category_id
+ORDER BY
+    c.category_name, p.product_name
+LIMIT 20;
+
+--Общая выручка по каждому продукту
+SELECT
+    p.product_name,
+    SUM(oi.total_price) AS total_revenue
+FROM
+    products p
+JOIN
+    order_items oi ON p.product_id = oi.product_id
+GROUP BY
+    p.product_name
+ORDER BY
+    total_revenue DESC
+LIMIT 20;
+
+--Сколько заказов сделал каждый клиент
+SELECT
+    c.first_name || ' ' || c.last_name AS customer_name,
+    COUNT(o.order_id) AS order_count
+FROM
+    customers c
+LEFT JOIN
+    orders o ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id
+ORDER BY
+    order_count DESC
+LIMIT 20;
+
+--Вывести категории с количеством товаров в каждой
+SELECT
+    c.category_name,
+    COUNT(p.product_id) AS product_count
+FROM
+    categories c
+LEFT JOIN
+    products p ON c.category_id = p.category_id
+GROUP BY
+    c.category_id
+ORDER BY
+    product_count DESC
+LIMIT 20;
+
+--Общая выручка по всем заказам
+SELECT
+    SUM(total_amount) AS total_revenue
+FROM
+    orders;
