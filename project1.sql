@@ -136,3 +136,71 @@ SELECT
 FROM
     orders
 LIMIT 1;
+
+-- Создаем временную таблицу для хранения данных о продажах за последний месяц
+CREATE TEMP TABLE temp_monthly_sales AS
+SELECT
+    o.order_id,
+    o.order_date,
+    oi.product_id,
+    oi.quantity,
+    oi.total_price
+FROM
+    orders o
+JOIN
+    order_items oi ON o.order_id = oi.order_id
+WHERE
+    o.order_date >= NOW() - INTERVAL '1 month';
+
+-- Выводим данные из временной таблицы
+SELECT * FROM temp_monthly_sales LIMIT 5;
+
+
+-- Создаем представление для суммарных затрат клиентов
+CREATE VIEW customer_total_spending AS
+SELECT
+    c.customer_id,
+    c.first_name || ' ' || c.last_name AS customer_name,
+    SUM(o.total_amount) AS total_spending
+FROM
+    customers c
+JOIN
+    orders o ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id, c.first_name, c.last_name;
+
+-- Используем представление
+SELECT * FROM customer_total_spending
+ORDER BY total_spending DESC
+LIMIT 5;
+
+
+-- Проверяем, что в таблице customers уже есть уникальное ограничение для email
+ALTER TABLE customers ADD CONSTRAINT unique_email UNIQUE (email);
+
+
+-- Проверяем, что товар есть на складе перед добавлением в заказ
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM products
+        WHERE product_id = 1 AND stock_quantity >= 1
+    ) THEN
+        RAISE EXCEPTION 'Insufficient stock for product_id %', 1;
+    END IF;
+END $$;
+
+-- Создаем функцию для уменьшения количества товаров на складе
+CREATE OR REPLACE FUNCTION update_stock_after_order()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE products
+    SET stock_quantity = stock_quantity - NEW.quantity
+    WHERE product_id = NEW.product_id;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
